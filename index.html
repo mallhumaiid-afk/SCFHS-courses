@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SCFHS Courses Portal</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f8;
+      color: #17323a;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 22px;
+      text-align: center;
+      border-bottom: 1px solid #dfe7e9;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 0;
+      color: #61747a;
+    }
+
+    main {
+      width: min(900px, 92%);
+      margin: 35px auto;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .option-button {
+      background: white;
+      border: 1px solid #d9e3e5;
+      border-radius: 14px;
+      padding: 24px 15px;
+      font-size: 17px;
+      font-weight: bold;
+      color: #17323a;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .option-button:hover {
+      transform: translateY(-3px);
+      border-color: #188977;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .course-card {
+      background: white;
+      border: 1px solid #dfe7e9;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .course-card h3 {
+      margin: 0 0 12px;
+    }
+
+    .course-card p {
+      margin: 7px 0;
+      color: #52686e;
+    }
+
+    .course-link {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 11px 18px;
+      background: #188977;
+      color: white;
+      text-decoration: none;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+
+    .back-button {
+      margin-bottom: 20px;
+      border: none;
+      background: transparent;
+      color: #188977;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .notice {
+      background: #fff8dd;
+      border: 1px solid #eedc99;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #77898e;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>SCFHS Courses Portal</h1>
+  <p>Find courses relevant to your professional category</p>
+</header>
+
+<main>
+
+  <!-- Professional category page -->
+  <section id="categorySection">
+
+    <div class="section-title">
+      <h2>Select your professional category</h2>
+      <p>اختر فئتك المهنية</p>
+    </div>
+
+    <div class="options">
+      <button class="option-button" onclick="showSpecialties('physician')">
+        Physicians<br>الأطباء
+      </button>
+
+      <button class="option-button" onclick="showSpecialties('nursing')">
+        Nursing<br>التمريض
+      </button>
+
+      <button class="option-button" onclick="showSpecialties('pharmacy')">
+        Pharmacy<br>الصيدلة
+      </button>
+
+      <button class="option-button" onclick="showSpecialties('allied')">
+        Allied Health<br>التخصصات الصحية المساندة
+      </button>
+    </div>
+
+  </section>
+
+  <!-- Specialty selection page -->
+  <section id="specialtySection" class="hidden">
+
+    <button class="back-button" onclick="goBackToCategories()">
+      ← Back
+    </button>
+
+    <div class="section-title">
+      <h2>Select your specialty</h2>
+      <p>اختر تخصصك</p>
+    </div>
+
+    <div id="specialtyOptions" class="options"></div>
+
+  </section>
+
+  <!-- Courses page -->
+  <section id="coursesSection" class="hidden">
+
+    <button class="back-button" onclick="goBackToSpecialties()">
+      ← Back
+    </button>
+
+    <div class="section-title">
+      <h2 id="coursesTitle">Available Courses</h2>
+      <p>الدورات المتاحة</p>
+    </div>
+
+    <div class="notice">
+      Course dates, eligibility and registration are subject to the official
+      information published on the SCFHS platform.
+    </div>
+
+    <div id="coursesList"></div>
+
+  </section>
+
+</main>
+
+<footer>
+  Internal awareness prototype — Registration is completed through the official SCFHS platform.
+</footer>
+
+<script>
+  let selectedCategory = "";
+
+  const specialties = {
+    physician: [
+      { name: "All Medical Specialties", value: "all-medical" },
+      { name: "Emergency Medicine", value: "emergency" },
+      { name: "Internal Medicine", value: "internal-medicine" },
+      { name: "Pediatrics", value: "pediatrics" },
+      { name: "Radiology", value: "radiology" }
+    ],
+
+    nursing: [
+      { name: "All Nursing Specialties", value: "all-nursing" },
+      { name: "Critical Care Nursing", value: "critical-care-nursing" },
+      { name: "Emergency Nursing", value: "emergency-nursing" },
+      { name: "Pediatric Nursing", value: "pediatric-nursing" }
+    ],
+
+    pharmacy: [
+      { name: "All Pharmacy Specialties", value: "all-pharmacy" },
+      { name: "Clinical Pharmacy", value: "clinical-pharmacy" },
+      { name: "Hospital Pharmacy", value: "hospital-pharmacy" }
+    ],
+
+    allied: [
+      { name: "All Allied Health Specialties", value: "all-allied" },
+      { name: "Medical Laboratory", value: "laboratory" },
+      { name: "Radiology Technology", value: "radiology-technology" },
+      { name: "Respiratory Therapy", value: "respiratory-therapy" },
+      { name: "Physiotherapy", value: "physiotherapy" },
+      { name: "Clinical Nutrition", value: "nutrition" }
+    ]
+  };
+
+  const courses = [
+    {
+      title: "Patient Safety Course",
+      categories: ["physician", "nursing", "pharmacy", "allied"],
+      specialties: ["all"],
+      date: "To be updated",
+      hours: "To be updated",
+      mode: "Online",
+      link: "https://mustamir.scfhs.org.sa/"
+    },
+
+    {
+      title: "Radiation Safety Course",
+      categories: ["physician", "allied"],
+      specialties: ["radiology", "radiology-technology"],
+      date: "To be updated",
+      hours: "To be updated",
+      mode: "Online",
+      link: "https://mustamir.scfhs.org.sa/"
+    },
+
+    {
+      title: "Critical Care Fundamentals",
+      categories: ["physician", "nursing"],
+      specialties: ["emergency", "internal-medicine", "critical-care-nursing"],
+      date: "To be updated",
+      hours: "To be updated",
+      mode: "Online",
+      link: "https://mustamir.scfhs.org.sa/"
+    },
+
+    {
+      title: "Laboratory Quality Management",
+      categories: ["allied"],
+      specialties: ["laboratory"],
+      date: "To be updated",
+      hours: "To be updated",
+      mode: "Online",
+      link: "https://mustamir.scfhs.org.sa/"
+    }
+  ];
+
+  function showSpecialties(category) {
+    selectedCategory = category;
+
+    document.getElementById("categorySection").classList.add("hidden");
+    document.getElementById("coursesSection").classList.add("hidden");
+    document.getElementById("specialtySection").classList.remove("hidden");
+
+    const container = document.getElementById("specialtyOptions");
+    container.innerHTML = "";
+
+    specialties[category].forEach(function(specialty) {
+      const button = document.createElement("button");
+
+      button.className = "option-button";
+      button.textContent = specialty.name;
+
+      button.onclick = function() {
+        showCourses(specialty.value, specialty.name);
+      };
+
+      container.appendChild(button);
+    });
+  }
+
+  function showCourses(specialtyValue, specialtyName) {
+    document.getElementById("specialtySection").classList.add("hidden");
+    document.getElementById("coursesSection").classList.remove("hidden");
+
+    document.getElementById("coursesTitle").textContent =
+      "Available Courses — " + specialtyName;
+
+    const list = document.getElementById("coursesList");
+    list.innerHTML = "";
+
+    const matchingCourses = courses.filter(function(course) {
+      const categoryMatches =
+        course.categories.includes(selectedCategory);
+
+      const specialtyMatches =
+        course.specialties.includes("all") ||
+        course.specialties.includes(specialtyValue) ||
+        specialtyValue.startsWith("all-");
+
+      return categoryMatches && specialtyMatches;
+    });
+
+    if (matchingCourses.length === 0) {
+      list.innerHTML =
+        "<div class='course-card'><h3>No courses currently available</h3><p>Please check again later.</p></div>";
+      return;
+    }
+
+    matchingCourses.forEach(function(course) {
+      const card = document.createElement("div");
+      card.className = "course-card";
+
+      card.innerHTML = `
+        <h3>${course.title}</h3>
+        <p><strong>Date:</strong> ${course.date}</p>
+        <p><strong>CPD Hours:</strong> ${course.hours}</p>
+        <p><strong>Attendance:</strong> ${course.mode}</p>
+        <a class="course-link"
+           href="${course.link}"
+           target="_blank"
+           rel="noopener noreferrer">
+           View on Mustamir
+        </a>
+      `;
+
+      list.appendChild(card);
+    });
+  }
+
+  function goBackToCategories() {
+    document.getElementById("specialtySection").classList.add("hidden");
+    document.getElementById("coursesSection").classList.add("hidden");
+    document.getElementById("categorySection").classList.remove("hidden");
+  }
+
+  function goBackToSpecialties() {
+    document.getElementById("coursesSection").classList.add("hidden");
+    document.getElementById("specialtySection").classList.remove("hidden");
+  }
+</script>
+
+</body>
+</html>
